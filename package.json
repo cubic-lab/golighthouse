@@ -1,0 +1,16 @@
+{
+  "name": "golighthouse",
+  "module": "index.ts",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "cli": "bun run ./packages/cli"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

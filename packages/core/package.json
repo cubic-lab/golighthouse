@@ -1,0 +1,11 @@
+{
+  "name": "@golighthouse/core",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "type": "module",
+  "dependencies": {
+    "consola": "^3.4.2",
+    "unctx": "^2.4.1",
+    "@golighthouse/ui": "workspace:*"
+  }
+}

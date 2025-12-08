@@ -1,0 +1,14 @@
+{
+  "name": "@golighthouse/cli",
+  "version": "0.0.1",
+  "description": "golighthouse a tool to fast your lighthouse",
+  "main": "index.ts",
+  "type": "module",
+  "dependencies": {
+    "commander": "^14.0.2",
+    "@golighthouse/core": "workspace:*"
+  },
+  "bin": {
+    "golighthouse": "index.ts"
+  }
+}
