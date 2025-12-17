@@ -10,14 +10,14 @@ interface RunOptions {
   domainRotation?: boolean
   urls?: string[]
   proxy?: string
-  samples?: number
-  throttle?: boolean
-  headless?: boolean
-  device?: 'mobile' | 'desktop'
-  categories?: string[]
+  samples: number
+  throttle: boolean
+  headless: boolean
+  device: 'mobile' | 'desktop'
+  categories: string[]
   config?: string
-  debug?: boolean
-  output?: string
+  debug: boolean
+  output: string
 }
 
 async function resolveUserConfig(options: RunOptions): Promise<GolighthouseUserConfig> {
@@ -36,7 +36,7 @@ async function resolveUserConfig(options: RunOptions): Promise<GolighthouseUserC
   } = options
 
   return {
-    debug: debug || false,
+    debug,
     proxy,
     sites: site ? [
       {
@@ -46,24 +46,14 @@ async function resolveUserConfig(options: RunOptions): Promise<GolighthouseUserC
       }
     ] : [],
     sampler: {
-      size: samples || 1,
-      throttle: throttle || true,
-      categories: categories || ['accessibility', 'best-practices', 'performance', 'seo'],
-      device: device || 'mobile',
-      headless: headless || true
+      size: samples,
+      throttle,
+      categories,
+      device,
+      headless
     },
-    output: output || process.cwd(),
+    output,
   }
-}
-
-function validateUserConfig(config: GolighthouseUserConfig) {
-  if (config.sites.length <= 0) {
-    console.error('Cli exited as there is no sites provided. Use -h for help')
-
-    return false
-  }
-
-  return true
 }
 
 program
@@ -76,13 +66,13 @@ program
   .option('-s, --site <site>', 'The site to run lighthouse')
   .option('--urls [urls...]', 'The urls of this site')
   .option('--proxy [proxy]', 'The proxy server url')
-  .option('--samples [samples]', 'The of number samples', _ => 1)
-  .option('--throttle [throttle]', 'Enable throttling or not')
-  .option('--headless [headless]', 'The browser launch mode', value => value === 'true')
-  .option('--device [device]', 'The device option accepts mobile and pc', _ => 'mobile')
-  .option('--categories [categories...]', 'Categories to run')
-  .option('--debug [debug]', 'Enable debug log or not')
-  .option('--output [output]', 'Set artifacts output path, default is current directory')
+  .option('--samples [samples]', 'The of number samples', value => parseInt(value), 1)
+  .option('--throttle [throttle]', 'Enable throttling or not', value => value === 'true', true)
+  .option('--headless [headless]', 'The browser launch mode', value => value === 'true', true)
+  .option('--device [device]', 'The device option accepts mobile and pc', 'mobile')
+  .option('--categories [categories...]', 'Categories to run', ['accessibility', 'best-practices', 'performance', 'seo'])
+  .option('--debug [debug]', 'Enable debug log or not', value => value === 'true', false)
+  .option('--output [output]', 'Set artifacts output path, default is current directory', 'artifacts')
   .option('--config [config]', 'The config file path')
   .action(async (siteArg: string, { site, ...restOpts}: RunOptions) => {
     const start = new Date()
@@ -90,7 +80,6 @@ program
       site: siteArg || site,
       ...restOpts
     })
-    if (!validateUserConfig(config)) return
 
     const golighthouse = new Golighthouse({
       name: 'cli',

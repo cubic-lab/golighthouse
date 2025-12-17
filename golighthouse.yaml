@@ -1,7 +1,8 @@
 name: Example
-samples: 3
-lighthouse:
-  throttling: true
+sampler:
+  size: 1
+  throttling: false
+  device: desktop
   categories:
     - accessibility
     - best-practices

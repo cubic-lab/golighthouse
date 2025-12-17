@@ -1,3 +1,5 @@
+import type { GolighthouseUserConfig } from "./types"
+
 export const AppName = 'Golighthouse'
 
 export const ReportArtifacts = {
@@ -48,4 +50,17 @@ export const Throttling = {
 export const UserAgents = {
   desktop: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
   mobile: 'Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36'
+}
+
+export const DefaultUserConfig: GolighthouseUserConfig = {
+  sites: [],
+  sampler: {
+    size: 1,
+    throttle: true,
+    categories: ['accessibility', 'best-practices', 'performance', 'seo'],
+    device: 'mobile',
+    headless: true
+  },
+  debug: false,
+  output: 'artifacts'
 }

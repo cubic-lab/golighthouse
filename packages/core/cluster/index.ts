@@ -7,7 +7,7 @@ export async function launchPuppeteerCluster(context: GolighthouseContext) {
 
   const cluster = await Cluster.launch({
     puppeteerOptions,
-    monitor: true,
+    monitor: false,
     workerCreationDelay: 500,
     retryLimit: 3,
     timeout: 5 * 60 * 1000, // wait for up to 5 minutes

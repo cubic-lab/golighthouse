@@ -2,6 +2,7 @@ import path from 'path'
 import { createHooks } from 'hookable'
 import { Launcher } from 'chrome-launcher'
 import { colorize } from 'consola/utils'
+import { defu } from 'defu'
 import { createLogger, useLogger } from './logging'
 import { GolighthouseScheduler } from './sched/scheduler'
 import type { 
@@ -11,7 +12,7 @@ import type {
   GolighthouseRuntimeSetting,
   ModeProvider,
 } from './types'
-import { AppName, ScreenEmulations, Throttling } from './constants'
+import { AppName, DefaultUserConfig, ScreenEmulations, Throttling } from './constants'
 import { successBox } from './toolkits/terms'
 import { newRoute, type Route } from './route'
 import { fileURLToPath } from 'url'
@@ -25,6 +26,8 @@ export class Golighthouse {
 
   constructor(provider: ModeProvider, config: GolighthouseUserConfig) {
     createLogger(true)
+    this.validateUserConfig(config)
+    config = defu(config, DefaultUserConfig)
     this.#scheduler = new GolighthouseScheduler(this)
     this.#context = {
       provider,
@@ -40,6 +43,12 @@ export class Golighthouse {
 
   get hooks() {
     return this.#context.hooks
+  }
+
+  private validateUserConfig(config: GolighthouseUserConfig) {
+    if (config.sites.length <= 0) {
+      throw new Error('Failed to valid user config as there is no sites provided.')
+    }
   }
 
   async closeWorker() {
@@ -132,7 +141,7 @@ export class Golighthouse {
     const label = (name: string) => colorize('bold', colorize('magenta', (`▸ ${name}:`)))
     const { provider, userConfig: { sampler }, runtimeSetting: { artifactsDir } } = this.context
     const title = [
-      `🚀 ${colorize('bold', colorize('blueBright', AppName))} ${colorize('dim', `${provider.name} @ v${provider.version}`)} `
+      `🚀 ${colorize('bold', colorize('blueBright', AppName))} ${colorize('dim', `${provider.name} @ v${provider.version}`)} \n`
     ]
     title.push(...[
       `${label('Scanning Routes')} ${routes.length}`,
