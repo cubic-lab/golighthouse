@@ -1,0 +1,15 @@
+name: Example
+samples: 3
+lighthouse:
+  throttling: true
+  categories:
+    - accessibility
+    - best-practices
+    - performance
+    - seo
+sites:
+  - baseUrl: https://www.quotationspage.com/
+    domainRotation: true
+    urls:
+      - /quotes/William_Shakespeare/
+      - weblog/

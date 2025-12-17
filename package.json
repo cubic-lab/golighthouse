@@ -5,12 +5,15 @@
   "type": "module",
   "workspaces": ["packages/*"],
   "scripts": {
-    "cli": "bun run ./packages/cli"
+    "cli": "bun run ./packages/cli --output artifacts"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "chrome-launcher": "^1.2.1"
   }
 }
