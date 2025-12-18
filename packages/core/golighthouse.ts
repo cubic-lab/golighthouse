@@ -25,7 +25,7 @@ export class Golighthouse {
   #scheduler: GolighthouseScheduler
 
   constructor(provider: ModeProvider, config: GolighthouseUserConfig) {
-    createLogger(true)
+    createLogger(config.debug || false)
     this.validateUserConfig(config)
     config = defu(config, DefaultUserConfig)
     this.#scheduler = new GolighthouseScheduler(this)

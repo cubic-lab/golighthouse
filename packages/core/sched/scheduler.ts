@@ -50,7 +50,7 @@ export class GolighthouseScheduler {
   }
 
   async close() {
-    await this.cluster?.close()
+    await this.cluster?.close().catch(() => {})
   }
 
   async start(routes: Route[]) {
@@ -70,8 +70,6 @@ export class GolighthouseScheduler {
       createdAt: Date.now(),
     }
     this.doQueue(job)
-    this.#glh.hooks.callHook('job-added', job)
-    this.updateProgress()
   }
 
   queueRoutes(routes: Route[]) {
@@ -81,6 +79,7 @@ export class GolighthouseScheduler {
 
   private doQueue(job: GolighthouseJob) {
     const log = useLogger()
+
     if (!this.#cluster) {
       throw new Error('Cluster is not initialized')
     }
@@ -89,13 +88,17 @@ export class GolighthouseScheduler {
     this.#cluster.execute(
       job, (arg) => {
         const { data: { route } } = arg
-        this.#currentJob = `Lighthouse Job - ${new URL(route.siteUrl).host} - ${route.path}`
+        this.#currentJob = `Job - ${route.url}`
+        log.debug(`Start to execute: ${this.#currentJob}`)
         this.updateProgress()
         this.#glh.hooks.callHook('job-started', job)
         return lighthouseJobExecutor(arg)
       })
       .then((ret) => {
         const { job: { status, route } } = ret
+        log.debug(`Job execution finished - ${route.url}, status: ${job.status}`)
+
+        this.determineWorkerStatus()
 
         switch (status) {
           case 'failed-retry': {
@@ -108,15 +111,30 @@ export class GolighthouseScheduler {
             this.doRequeue(ret)
             break
           }
+          case 'failed': {
+            break
+          }
           case 'completed': {
             this.#glh.hooks.callHook('job-completed', ret)
             this.updateProgress()
             break
           }
-          default:
-            return
         }
       })
+
+    log.debug(`A job added to worker queue - ${job.route.url}`)
+    this.updateProgress()
+    this.#glh.hooks.callHook('job-added', job)
+  }
+
+  private determineWorkerStatus() {
+    const allFinished = this.jobs.values().filter(j => j.status === 'pending' || j.status === 'running')
+      .toArray()
+      .length === 0
+
+    if (allFinished) {
+      this.#glh.hooks.callHook('worker-finished')
+    }
   }
 
   private doRequeue(ret: GolighthouseJobReturn) {

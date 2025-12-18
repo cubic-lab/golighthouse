@@ -113,14 +113,12 @@ export function createProgressBox(): ProgressBox {
       if (progressData.timeRemaining && progressData.timeRemaining > 0) {
         message += ` • ETA: ${formatTime(progressData.timeRemaining)}`
       }
-
       if (progressData.currentJob) {
-        const currentTask = progressData.currentJob.length > 50
-          ? `${progressData.currentJob.substring(0, 47)}...`
+        const job = progressData.currentJob.length > 60
+          ? `${progressData.currentJob.substring(0, 57)}...`
           : progressData.currentJob
-        message += ` • ${currentTask}`
+        message += ` • ${job}`
       }
-
       // Update the spinner message
       clackSpinner.message(message)
     }

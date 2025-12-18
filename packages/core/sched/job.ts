@@ -11,6 +11,7 @@ import type { PuppeteerJobExecutor } from '../types'
 import { ReportArtifacts } from '../constants'
 import { base64ToBuffer } from '../toolkits/sed'
 import { routeUrl } from '../route'
+import { sanitizeUrlForFilePath } from '../toolkits/urls'
 
 function normaliseLighthouseResult(artifactPath: string, result: Result): GolighthouseReportData {
   const measuredCategories = 
@@ -107,6 +108,11 @@ export const lighthouseJobExecutor: PuppeteerJobExecutor = async (args) => {
     job.status = 'failed-retry'
   }
 
+  const setJobCompleted = () => {
+    job.finishedAt = Date.now()
+    job.status = 'completed'
+  }
+
   setJobExecuted()
 
   const setupPage = async (page: Page) => {
@@ -130,7 +136,7 @@ export const lighthouseJobExecutor: PuppeteerJobExecutor = async (args) => {
   const { sampler } = userConfig
   const { artifactsDir, lighthouseOptions, lighthouseProcessPath } = runtimeSetting
   const siteURL = new URL(route.siteUrl)
-  const artifactPath = join(artifactsDir, siteURL.host)
+  const artifactPath = join(artifactsDir, siteURL.host, sanitizeUrlForFilePath(route.path))
   const urlToRun = routeUrl(page.url(), route.url)
   const jobRet: GolighthouseJobReturn = {
     job,
@@ -223,6 +229,8 @@ export const lighthouseJobExecutor: PuppeteerJobExecutor = async (args) => {
       }
     }
   }
+
+  setJobCompleted()
 
   jobRet.report.data = normaliseLighthouseResult(artifactPath, lhResult!)
 
