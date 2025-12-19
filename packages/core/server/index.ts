@@ -59,9 +59,10 @@ export const createServer = (context: GolighthouseContext) => {
 
       // Wildcard route for all routes that start with "/api/" and aren't otherwise matched
       "/api/*": Response.json({ message: "Not found" }, { status: 404 }),
-      "/artifacts": async req => {
+      "/artifacts/*": async req => {
         const { pathname } = new URL(req.url)
-        const file = Bun.file(path.resolve(artifactsDir, `.${pathname}`))
+        const pnWithoutPrefix = pathname.replace(/^\/artifacts\//, '')
+        const file = Bun.file(path.resolve(artifactsDir, `${pnWithoutPrefix}`))
 
         if (await file.exists()) {
           return new Response(file)
