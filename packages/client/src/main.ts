@@ -1,16 +1,17 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
-import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
+import ui from '@nuxt/ui/vue-plugin'
+import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 
 const app = createApp(App)
-
-app.use(PrimeVue, {
-  theme: {
-    preset: Aura
-  }
+const router = createRouter({
+  routes: [],
+  history: createWebHistory()
 })
+
+app.use(ui)
+app.use(router)
 
 app.mount('#app')
